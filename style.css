@@ -60,3 +60,10 @@ footer{border-top:1px solid var(--rule);padding:36px 0 56px;color:var(--mute);fo
 footer a{color:var(--ink)}
 @media(max-width:820px){.hero,.two,.about{grid-template-columns:1fr}.about img{width:150px;height:150px}nav a{margin-left:14px}.docs li{flex-direction:column;align-items:flex-start}}
 @media(max-width:520px){nav{display:none}}
+.certh{font-size:22px;margin:34px 0 14px}
+.certs{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:18px}
+.cert{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--rule);border-radius:8px;padding:10px 10px 14px;text-decoration:none;color:var(--ink)}
+.cert:hover{border-color:var(--gold);color:var(--ink)}
+.cert img{width:100%;aspect-ratio:4/3;object-fit:cover;object-position:top;border-radius:4px;border:1px solid var(--rule);background:#fff}
+.cert .ct{font-weight:600;font-size:15px;line-height:1.35;margin-top:10px}
+.cert .cm{font-size:13.5px;color:var(--mute);margin-top:2px}
