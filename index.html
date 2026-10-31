@@ -18,15 +18,28 @@
 
 <main id="top">
 <div class="hero">
- <div>
-  <h1>I make satellites point where they should.</h1>
-  <p class="lede">MSc student and lab instructor in Electrical and Electronic Engineering at North South University, Dhaka, and Junior Research Fellow in the ADCS team at SPARRSO. I work on attitude determination and control for the NSU-AI-SAT CubeSat, on its radio link budget and antennas, and on swarm robotics at the NIRO Lab.</p>
-  <div class="btns"><a class="btn primary" href="files/Md-Tasbeer-Ahmed-CV.pdf">Download CV (PDF)</a><a class="btn" href="#contact">Get in touch</a></div>
+ <div class="intro">
+  <img class="portrait" src="img/tasbeer-portrait.jpg" alt="Md Tasbeer Ahmed" width="560" height="700">
+  <div class="id">
+   <h1>Md Tasbeer Ahmed</h1>
+   <ul class="roles">
+    <li><b>MSc Student</b><span>Department of Electrical and Computer Engineering, North South University</span></li>
+    <li><b>Student Researcher</b><span>NSU Intelligent Robotics (NIRO) Lab</span></li>
+    <li><b>Junior Research Fellow</b><span>ADCS Team, Bangladesh Space Research and Remote Sensing Organization (SPARRSO)</span></li>
+    <li><b>Lab Instructor</b><span>Department of Electrical and Computer Engineering, North South University</span></li>
+   </ul>
+   <div class="btns"><a class="btn primary" href="files/Md-Tasbeer-Ahmed-CV.pdf">Download CV (PDF)</a><a class="btn" href="#contact">Get in touch</a></div>
+  </div>
  </div>
  <figure class="sim" style="margin:0">
+  <div class="tabs" role="tablist" aria-label="Simulation demos">
+   <button type="button" role="tab" data-scene="sat" aria-selected="true">Satellite</button>
+   <button type="button" role="tab" data-scene="drone" aria-selected="false">Drone</button>
+   <button type="button" role="tab" data-scene="form" aria-selected="false">Formation</button>
+  </div>
   <canvas id="sim" role="img" aria-label="A 3U CubeSat tumbling, then settling into a fixed pointing attitude as a simulated controller removes its spin."></canvas>
-  <div class="tele" aria-hidden="true"><div>Spin rate<b id="t-w">0.0 °/s</b></div><div>Pointing error<b id="t-e">0.0°</b></div><div>Mode<b id="t-m">Detumble</b></div></div>
-  <div class="row"><span>Simplified detumble and pointing demo, not flight data.</span><button id="re" type="button">Spin it again</button></div>
+  <div class="tele" aria-hidden="true"><div><span id="l-w">Spin rate</span><b id="t-w">0.0 °/s</b></div><div><span id="l-e">Pointing error</span><b id="t-e">0.0°</b></div><div><span id="l-m">Mode</span><b id="t-m">Detumble</b></div></div>
+  <div class="row"><span id="note">Simplified detumble and pointing demo, not flight data.</span><button id="re" type="button">Spin it again</button></div>
  </figure>
 </div>
 
@@ -35,8 +48,7 @@
  <p class="sub">My main work is satellite attitude control. I keep a second line in robots that work in groups and with people.</p>
  <ul class="focus"><li>CubeSat ADCS</li><li>Satellite communications</li><li>Control systems</li><li>Swarm robotics</li><li>Human-robot interaction</li><li>Embedded systems</li></ul>
  <div class="about" style="margin-top:36px">
-  <img src="img/tasbeer.jpg" alt="Portrait of Md Tasbeer Ahmed" width="200" height="200">
-  <p style="margin:0;max-width:38em">I finished my BSc in Electrical and Electronic Engineering at North South University in 2024 (CGPA 3.67, Magna Cum Laude) and started my MSc in September 2025. I am a Junior Research Fellow in the ADCS team at the Bangladesh Space Research and Remote Sensing Organization (SPARRSO). On NSU-AI-SAT I am a project lead of the ADCS team and a member of the communications team. My tools are MATLAB and Simulink for modelling, Kalman filters for sensor fusion, and CST Studio for antennas. I am working toward a PhD in swarm robotics and human-robot interaction.</p>
+  <p style="margin:0;max-width:44em">I finished my BSc in Electrical and Electronic Engineering at North South University in 2024 (CGPA 3.67, Magna Cum Laude) and started my MSc in September 2025. I am a Junior Research Fellow in the ADCS team at the Bangladesh Space Research and Remote Sensing Organization (SPARRSO). On NSU-AI-SAT I am a project lead of the ADCS team and a member of the communications team. My tools are MATLAB and Simulink for modelling, Kalman filters for sensor fusion, and CST Studio for antennas. I am working toward a PhD in swarm robotics and human-robot interaction.</p>
  </div>
 </div></section>
 
