@@ -7,7 +7,7 @@
 <meta name="description" content="MSc student and lab instructor at North South University, and Junior Research Fellow at SPARRSO. CubeSat ADCS, satellite communications, swarm robotics and human-robot interaction.">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;600&family=Newsreader:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="style.css?v=3">
 </head>
 <body>
 <div class="wrap">
@@ -31,16 +31,20 @@
    <div class="btns"><a class="btn primary" href="files/Md-Tasbeer-Ahmed-CV.pdf">Download CV (PDF)</a><a class="btn" href="#contact">Get in touch</a></div>
   </div>
  </div>
- <figure class="sim" style="margin:0">
-  <div class="tabs" role="tablist" aria-label="Simulation demos">
-   <button type="button" role="tab" data-scene="sat" aria-selected="true">Satellite</button>
-   <button type="button" role="tab" data-scene="drone" aria-selected="false">Drone</button>
-   <button type="button" role="tab" data-scene="form" aria-selected="false">Formation</button>
-  </div>
-  <canvas id="sim" role="img" aria-label="A 3U CubeSat tumbling, then settling into a fixed pointing attitude as a simulated controller removes its spin."></canvas>
-  <div class="tele" aria-hidden="true"><div><span id="l-w">Spin rate</span><b id="t-w">0.0 °/s</b></div><div><span id="l-e">Pointing error</span><b id="t-e">0.0°</b></div><div><span id="l-m">Mode</span><b id="t-m">Detumble</b></div></div>
-  <div class="row"><span id="note">Simplified detumble and pointing demo, not flight data.</span><button id="re" type="button">Spin it again</button></div>
+ <div class="sims">
+ <figure class="sim">
+  <figcaption>CubeSat: tumbling to detumbling</figcaption>
+  <canvas id="sim-sat" role="img" aria-label="A 3U CubeSat tumbling freely, then a simulated controller detumbles it and holds a fixed pointing attitude."></canvas>
+  <div class="tele" aria-hidden="true"><div>Spin rate<b id="sat-w">0.0 °/s</b></div><div>Pointing error<b id="sat-e">0.0°</b></div><div>Mode<b id="sat-m">Tumbling</b></div></div>
+  <div class="row"><span>Simplified demo, not flight data.</span><button id="sat-re" type="button">Spin it again</button></div>
  </figure>
+ <figure class="sim">
+  <figcaption>Three drones holding a triangle</figcaption>
+  <canvas id="sim-form" role="img" aria-label="Three quadcopters flying a figure-eight path while holding an equilateral triangle formation; a pushed drone returns to its slot."></canvas>
+  <div class="tele" aria-hidden="true"><div>Spacing error<b id="form-w">0.0 %</b></div><div>Formation<b id="form-e">Triangle</b></div><div>Mode<b id="form-m">Holding</b></div></div>
+  <div class="row"><span>Simplified demo, not flight data.</span><button id="form-re" type="button">Push a drone</button></div>
+ </figure>
+ </div>
 </div>
 
 <section id="research"><div class="wrap">
@@ -129,5 +133,5 @@
  <p style="margin:18px 0 0">© 2026 Md Tasbeer Ahmed</p>
 </div></footer>
 </div>
-<script src="sim.js"></script>
+<script src="sim.js?v=3"></script>
 </body></html>

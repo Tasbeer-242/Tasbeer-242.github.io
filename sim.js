@@ -1,9 +1,7 @@
 (function(){
-const c=document.getElementById('sim'),ctx=c.getContext('2d');
-const S=720;c.width=S;c.height=S;
+const S=720;let ctx;
 const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
 const $=id=>document.getElementById(id);
-const el={w:$('t-w'),e:$('t-e'),m:$('t-m'),lw:$('l-w'),le:$('l-e'),lm:$('l-m'),note:$('note'),btn:$('re')};
 const D2R=Math.PI/180,R2D=180/Math.PI;
 // quaternion helpers [w,x,y,z]
 const qm=(a,b)=>[a[0]*b[0]-a[1]*b[1]-a[2]*b[2]-a[3]*b[3],a[0]*b[1]+a[1]*b[0]+a[2]*b[3]-a[3]*b[2],a[0]*b[2]-a[1]*b[3]+a[2]*b[0]+a[3]*b[1],a[0]*b[3]+a[1]*b[2]-a[2]*b[1]+a[3]*b[0]];
@@ -18,7 +16,7 @@ const poly=(pts)=>{ctx.beginPath();pts.forEach((p,i)=>i?ctx.lineTo(p[0],p[1]):ct
 
 /* ---------------- Satellite: detumble then point ---------------- */
 const sat=(function(){
- let q,w,mode;
+ let q,w,mode,tt;
  const hx=.5,hy=.5,hz=1.5;
  const V=[];for(const x of[-1,1])for(const y of[-1,1])for(const z of[-1,1])V.push([x*hx,y*hy,z*hz]);
  const idx=(x,y,z)=>((x>0)<<2)|((y>0)<<1)|(z>0);
@@ -34,12 +32,13 @@ const sat=(function(){
  const Rv=qm([Math.cos(.26),0,Math.sin(.26),0],[Math.cos(-.57),Math.sin(-.57),0,0]);
  const target=qn(qm(qc(cam),Rv));
  function proj(p){const r=rot(cam,p);const s=128/(1+r[2]*0.04);return[S/2+r[0]*s,S/2-r[1]*s,r[2]]}
- function reset(){q=qn([Math.random()-.5,Math.random()-.5,Math.random()-.5,Math.random()-.5]);w=rnd3().map(x=>x*0.9);mode='Detumble'}
+ function reset(){q=qn([Math.random()-.5,Math.random()-.5,Math.random()-.5,Math.random()-.5]);w=rnd3().map(x=>x*0.9);mode='Tumbling';tt=0}
  function settle(){q=target.slice();w=[0,0,0];mode='Pointing'}
  function err(){const r=qm(qc(target),q);return 2*Math.acos(Math.min(1,Math.abs(r[0])))*R2D}
  function step(dt){
   const wm=Math.hypot(...w)*R2D;
-  if(mode==='Detumble'){w=w.map(x=>x*Math.exp(-0.55*dt));if(wm<1.2)mode='Pointing'}
+  if(mode==='Tumbling'){tt+=dt;if(tt>2.5)mode='Detumbling'}
+  else if(mode==='Detumbling'){w=w.map(x=>x*Math.exp(-0.55*dt));if(wm<1.2)mode='Pointing'}
   else{let r=qm(qc(target),q);if(r[0]<0)r=r.map(x=>-x);const Kp=2.2,Kd=2.6;w=[0,1,2].map(i=>w[i]+(-Kp*r[i+1]-Kd*w[i])*dt)}
   q=integ(q,w,dt);
  }
@@ -67,7 +66,7 @@ const sat=(function(){
 })();
 
 /* ---------------- Shared drone renderer (world z up) ---------------- */
-const VIEW={yaw:-35*D2R,pitch:24*D2R};
+const VIEW={yaw:-35*D2R,pitch:46*D2R};
 function view(p,sc,cy){
  const cy_=Math.cos(VIEW.yaw),sy=Math.sin(VIEW.yaw),cp=Math.cos(VIEW.pitch),sp=Math.sin(VIEW.pitch);
  const x1=p[0]*cy_-p[1]*sy,y1=p[0]*sy+p[1]*cy_,z1=p[2];
@@ -124,37 +123,6 @@ function drawDrone(pos,q,s,sc,cy,spin,gz){
  items.sort((a,b)=>b.d-a.d).forEach(o=>o.f());
 }
 
-/* ---------------- Drone: tumbling, then detumbling, then level hover ---------------- */
-const drone=(function(){
- let q,w,mode,z,vz,t,spin;
- const sc=150,cy=S*0.5,gz=-1.55;
- function reset(){q=qn([Math.random()-.5,Math.random()-.5,Math.random()-.5,Math.random()-.5]);w=rnd3().map(x=>x*(320+Math.random()*120)*D2R);mode='Tumbling';z=.35;vz=0;t=0;spin=0}
- function settle(){q=[1,0,0,0];w=[0,0,0];mode='Hover';z=0;vz=0;t=3;spin=0}
- const tilt=()=>{const up=rot(q,[0,0,1]);return Math.acos(Math.max(-1,Math.min(1,up[2])))*R2D};
- function step(dt){
-  t+=dt;spin+=dt*(mode==='Tumbling'?9:26);
-  const wm=Math.hypot(...w)*R2D;
-  if(mode==='Tumbling'){ if(t>2.2)mode='Detumbling'; vz-=.35*dt; }
-  else if(mode==='Detumbling'){ w=w.map(x=>x*Math.exp(-2.4*dt)); if(wm<20)mode='Levelling'; }
-  else { let r=qm(qc([1,0,0,0]),q);if(r[0]<0)r=r.map(x=>-x);const Kp=14,Kd=6.5;
-   const wb=w;const tq=[0,1,2].map(i=>-Kp*r[i+1]-Kd*wb[i]);w=w.map((x,i)=>x+tq[i]*dt);
-   if(mode==='Levelling'&&tilt()<1.5&&wm<3)mode='Hover'; }
-  if(mode!=='Tumbling'){const tz=mode==='Hover'?Math.sin(t*1.6)*.05:0;vz+=(-(z-tz)*5-vz*3.2)*dt}
-  z+=vz*dt;if(z<gz+.9){z=gz+.9;vz=Math.max(0,vz)}
-  q=integ(q,w,dt);
- }
- function draw(){
-  ground(sc,cy,gz,2,.5);
-  drawDrone([0,0,z],q,1.25,sc,cy,spin,gz);
-  // world up reference
-  const a=view([-1.5,-1.2,gz],sc,cy),b=view([-1.5,-1.2,gz+.8],sc,cy);ctx.strokeStyle='#2e8b57';ctx.lineWidth=2.5;ctx.beginPath();ctx.moveTo(a[0],a[1]);ctx.lineTo(b[0],b[1]);ctx.stroke();
-  ctx.fillStyle='#2e8b57';ctx.font='600 22px "Instrument Sans",system-ui,sans-serif';ctx.fillText('up',b[0]+8,b[1]+8);
- }
- function read(){return[(Math.hypot(...w)*R2D).toFixed(0)+' °/s',tilt().toFixed(1)+'°',mode]}
- return{labels:['Body rate','Tilt','Mode'],note:'Simplified tumble-recovery demo, not flight data.',btn:'Tumble again',
-  aria:'A quadcopter tumbling out of control, then a simulated controller damps its spin and levels it into a steady hover.',reset,settle,step,draw,read};
-})();
-
 /* ---------------- Formation: three drones holding a triangle ---------------- */
 const form=(function(){
  const sc=118,cy=S*0.5,gz=-.4,R=.8,A=1.65;
@@ -195,27 +163,19 @@ const form=(function(){
   aria:'Three quadcopters flying a figure-eight path while holding an equilateral triangle formation; a pushed drone returns to its slot.',reset,settle,step,draw,read};
 })();
 
-/* ---------------- Scene switching ---------------- */
-const scenes={sat,drone,form};let cur=sat;
-const tabs=[...document.querySelectorAll('.tabs [role=tab]')];
-function show(){ctx.clearRect(0,0,S,S);cur.draw();const r=cur.read();el.w.textContent=r[0];el.e.textContent=r[1];el.m.textContent=r[2]}
-function select(key){
- cur=scenes[key];VIEW.pitch=cur.pitch||24*D2R;
- tabs.forEach(b=>b.setAttribute('aria-selected',b.dataset.scene===key?'true':'false'));
- [el.lw.textContent,el.le.textContent,el.lm.textContent]=cur.labels;
- el.note.textContent=cur.note;el.btn.textContent=cur.btn;c.setAttribute('aria-label',cur.aria);
- if(reduce)cur.settle();else if(key!=='form')cur.reset();
- show();
-}
-tabs.forEach(b=>b.addEventListener('click',()=>select(b.dataset.scene)));
-tabs.forEach((b,i)=>b.addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key==='ArrowLeft'){const n=tabs[(i+(e.key==='ArrowRight'?1:2))%3];n.focus();n.click()}}));
-select('sat');
-if(reduce){el.btn.hidden=true;return}
+/* ---------------- Two canvases side by side ---------------- */
+const panes=[['sat',sat],['form',form]].map(([k,sc])=>{const cv=$('sim-'+k);cv.width=S;cv.height=S;
+ return{sc,ctx:cv.getContext('2d'),t:[$(k+'-w'),$(k+'-e'),$(k+'-m')],btn:$(k+'-re')}});
+function show(p){ctx=p.ctx;ctx.clearRect(0,0,S,S);p.sc.draw();const r=p.sc.read();p.t.forEach((e,i)=>e.textContent=r[i])}
+panes.forEach(p=>{if(reduce)p.sc.settle();else if(p.sc===sat)p.sc.reset();show(p)});
+if(reduce){panes.forEach(p=>p.btn.hidden=true);return}
+panes.forEach(p=>p.btn.addEventListener('click',()=>p.sc.reset()));
+// only animate panes that are on screen
+const vis=new Map(panes.map(p=>[p.ctx.canvas,true]));
+if('IntersectionObserver'in window){const io=new IntersectionObserver(es=>es.forEach(e=>vis.set(e.target,e.isIntersecting)));panes.forEach(p=>io.observe(p.ctx.canvas))}
 let last=performance.now();
 function frame(t){const dt=Math.min(.05,(t-last)/1000);last=t;
- // sub-step for stability with stiff gains
- for(let i=0;i<4;i++)cur.step(dt/4);
- show();requestAnimationFrame(frame)}
+ panes.forEach(p=>{if(!vis.get(p.ctx.canvas))return;for(let i=0;i<4;i++)p.sc.step(dt/4);show(p)});
+ requestAnimationFrame(frame)}
 requestAnimationFrame(frame);
-el.btn.addEventListener('click',()=>cur.reset());
 })();
