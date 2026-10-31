@@ -11,11 +11,13 @@ header.top{display:flex;justify-content:space-between;align-items:center;padding
 header.top .who{font-family:"Newsreader",Georgia,serif;font-size:20px;text-decoration:none;color:var(--ink)}
 nav a{margin-left:22px;text-decoration:none;color:var(--mute);font-size:15px}
 nav a:hover{color:var(--ink)}
-.hero{padding:28px 0 56px}
+.hero{padding:28px 0 48px}
 .intro{display:grid;grid-template-columns:170px minmax(0,640px);gap:32px;align-items:start}
 .portrait{display:block;width:170px;height:212px;object-fit:cover;object-position:50% 20%;border-radius:10px;border:1px solid var(--rule);background:var(--panel)}
 .hero h1{font-size:clamp(32px,4vw,44px);letter-spacing:-.015em}
-.sims{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:40px}
+.rgrid{display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:44px;align-items:start}
+.sims{display:grid;grid-template-columns:1fr;gap:20px}
+.sim figcaption{line-height:1.25}
 .sim figcaption{font-family:"Newsreader",Georgia,serif;font-size:20px;margin:0 0 6px}
 .sim{margin:0}
 .roles{list-style:none;margin:16px 0 26px;padding:0}
@@ -66,7 +68,8 @@ section>.wrap>h2{font-size:34px;margin-bottom:8px}
 .skills dt{font-weight:600;margin-top:10px}.skills dd{margin:0;color:var(--mute)}
 footer{border-top:1px solid var(--rule);padding:36px 0 56px;color:var(--mute);font-size:15px}
 footer a{color:var(--ink)}
-@media(max-width:820px){.two,.sims{grid-template-columns:1fr}nav a{margin-left:14px}.docs li{flex-direction:column;align-items:flex-start}}
+@media(max-width:900px){.rgrid{grid-template-columns:1fr}.sims{grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}}
+@media(max-width:820px){.two{grid-template-columns:1fr}nav a{margin-left:14px}.docs li{flex-direction:column;align-items:flex-start}}
 @media(max-width:520px){nav{display:none}.intro{grid-template-columns:1fr;gap:18px}.portrait{width:140px;height:175px}.hero{padding-top:12px}}
 .certh{font-size:22px;margin:34px 0 14px}
 .certs{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:18px}

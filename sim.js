@@ -66,7 +66,7 @@ const sat=(function(){
 })();
 
 /* ---------------- Shared drone renderer (world z up) ---------------- */
-const VIEW={yaw:-35*D2R,pitch:46*D2R};
+const VIEW={yaw:-35*D2R,pitch:62*D2R};
 function view(p,sc,cy){
  const cy_=Math.cos(VIEW.yaw),sy=Math.sin(VIEW.yaw),cp=Math.cos(VIEW.pitch),sp=Math.sin(VIEW.pitch);
  const x1=p[0]*cy_-p[1]*sy,y1=p[0]*sy+p[1]*cy_,z1=p[2];
@@ -123,44 +123,52 @@ function drawDrone(pos,q,s,sc,cy,spin,gz){
  items.sort((a,b)=>b.d-a.d).forEach(o=>o.f());
 }
 
-/* ---------------- Formation: three drones holding a triangle ---------------- */
+/* ---------------- Multi-UAV Drone Project: triangle mission loop ----------------
+   Pattern of the flown mission: each drone takes off from its own pad, climbs, moves to
+   its starting corner and holds; then all three fly one edge each at the same time, so
+   the whole triangle is covered in a third of the time one drone would need; then they
+   hold, return to their pads and land. Distances and timings are scaled for display. */
 const form=(function(){
- const sc=118,cy=S*0.5,gz=-.4,R=.8,A=1.65;
- let t,ds,mode,gustT;
- function centre(tt){const u=tt*.32;return{p:[A*Math.sin(u),A*.62*Math.sin(2*u),0],v:[A*.32*Math.cos(u),A*.62*.64*Math.cos(2*u),0]}}
- function slots(tt){const c=centre(tt);const h=Math.atan2(c.v[1],c.v[0]);
-  return[0,1,2].map(i=>{const a=h+i*2*Math.PI/3;return{p:[c.p[0]+R*Math.cos(a),c.p[1]+R*Math.sin(a),0],h}})}
- function init(){t=0;mode='Holding';gustT=0;ds=slots(0).map(s=>({p:s.p.slice(),v:[0,0,0],a:[0,0,0],h:s.h}))}
- function reset(){if(!ds)init();const i=Math.floor(Math.random()*3),d=rnd3();ds[i].v=[d[0]*3.2,d[1]*3.2,0];mode='Recovering';gustT=0}
- function settle(){init()}
- function step(dt){
-  t+=dt;const sl=slots(t),sl2=slots(t+dt);
-  ds.forEach((d,i)=>{const sv=[0,1,2].map(k=>(sl2[i].p[k]-sl[i].p[k])/dt);
-   const a=[0,1].map(k=>6*(sl[i].p[k]-d.p[k])+4.2*(sv[k]-d.v[k]));d.a=[a[0],a[1],0];
-   d.v[0]+=a[0]*dt;d.v[1]+=a[1]*dt;d.p[0]+=d.v[0]*dt;d.p[1]+=d.v[1]*dt;d.h=sl[i].h;});
-  if(mode==='Recovering'){gustT+=dt;if(err()<1&&gustT>.6)mode='Holding'}
- }
- function err(){let e=0;const L=R*Math.sqrt(3);for(let i=0;i<3;i++){const a=ds[i].p,b=ds[(i+1)%3].p;e+=Math.abs(Math.hypot(a[0]-b[0],a[1]-b[1])-L)/L}return e/3*100}
+ const sc=94,cy=S*0.55,h=1.6,R=1.55;
+ const C=[90,210,330].map(d=>[R*Math.cos(d*D2R),R*Math.sin(d*D2R),h]);
+ const H=C.map(c=>[c[0]*1.75,c[1]*1.75,0]);
+ const PH=[['On ground',1.2],['Take-off',2.4],['To start corners',2.6],['Hold',1.4],['Flying edges',3.4],['Hold',1.2],['Return',2.6],['Landing',2.4],['On ground',1.0]];
+ const T0=[];let acc=0;PH.forEach(p=>{T0.push(acc);acc+=p[1]});const TOT=acc;
+ let t=0;
+ const ss=u=>u<=0?0:u>=1?1:u*u*(3-2*u);
+ const lerp=(a,b,u)=>a.map((x,i)=>x+(b[i]-x)*u);
+ function phase(tt){let j=PH.length-1;while(j>0&&tt<T0[j])j--;return[j,ss((tt-T0[j])/PH[j][1])]}
+ function pos(i,tt){const [j,u]=phase(tt);const pad=H[i],air=[pad[0],pad[1],h],c0=C[i],c1=C[(i+1)%3];
+  switch(j){case 0:return pad;case 1:return lerp(pad,air,u);case 2:return lerp(air,c0,u);case 3:return c0;
+   case 4:return lerp(c0,c1,u);case 5:return c1;case 6:return lerp(c1,air,u);case 7:return lerp(air,pad,u);default:return pad}}
+ function covered(tt){const [j,u]=phase(tt);return j<4?0:j===4?u:j<=7?1:0}
+ function reset(){t=0}
+ function settle(){t=T0[5]+.6}
+ function step(dt){t=(t+dt)%TOT}
  function draw(){
-  ground(sc,cy,gz,2.5,.5);
-  // path
-  ctx.strokeStyle='rgba(182,122,18,.45)';ctx.lineWidth=1.5;ctx.setLineDash([6,6]);ctx.beginPath();
-  for(let i=0;i<=120;i++){const c=centre(i/120*2*Math.PI/.32).p;const p=view([c[0],c[1],gz],sc,cy);i?ctx.lineTo(p[0],p[1]):ctx.moveTo(p[0],p[1])}ctx.stroke();ctx.setLineDash([]);
-  // slots
-  slots(t).forEach(s=>{const p=view(s.p,sc,cy);ctx.strokeStyle='rgba(20,35,58,.35)';ctx.lineWidth=1.5;ctx.beginPath();ctx.arc(p[0],p[1],9,0,7);ctx.stroke()});
-  // formation edges
-  const P=ds.map(d=>view(d.p,sc,cy));ctx.strokeStyle='#b67a12';ctx.lineWidth=2;ctx.setLineDash([8,6]);poly(P);ctx.stroke();ctx.setLineDash([]);
+  ground(sc,cy,0,3.1,.62);
+  // take-off pads
+  H.forEach((p,i)=>{const sq=[[-.2,-.2],[.2,-.2],[.2,.2],[-.2,.2]].map(d=>view([p[0]+d[0],p[1]+d[1],0],sc,cy));poly(sq);ctx.fillStyle='rgba(20,35,58,.08)';ctx.fill();ctx.strokeStyle='rgba(20,35,58,.45)';ctx.lineWidth=1.5;ctx.stroke();
+   const m=view(p,sc,cy);ctx.fillStyle='rgba(20,35,58,.55)';ctx.font='600 15px "Instrument Sans",system-ui,sans-serif';ctx.textAlign='center';ctx.fillText('H'+(i+1),m[0],m[1]+5)});
+  // planned triangle at flight altitude, and its ground footprint
+  const tri=C.map(c=>view(c,sc,cy)),foot=C.map(c=>view([c[0],c[1],0],sc,cy));
+  ctx.setLineDash([7,7]);ctx.strokeStyle='rgba(20,35,58,.32)';ctx.lineWidth=1.5;poly(tri);ctx.stroke();ctx.setLineDash([]);
+  // covered edges
+  const u=covered(t);if(u>0){ctx.strokeStyle='#b67a12';ctx.lineWidth=6;ctx.lineCap='round';
+   C.forEach((c,i)=>{const p0=view(c,sc,cy),p1=view(lerp(c,C[(i+1)%3],u),sc,cy);ctx.beginPath();ctx.moveTo(p0[0],p0[1]);ctx.lineTo(p1[0],p1[1]);ctx.stroke()});
+}
   // drones, far first
-  ds.map((d,i)=>({d,i,z:P[i][2]})).sort((a,b)=>b.z-a.z).forEach(({d})=>{
-   const yaw=axAng([0,0,1],d.h);const am=Math.hypot(d.a[0],d.a[1]);
-   const tq=am>1e-3?axAng([-d.a[1],d.a[0],0],Math.min(.45,am*.05)):[1,0,0,0];
-   drawDrone(d.p,qm(tq,yaw),.48,sc,cy,t*26,gz);
-  });
+  const [j]=phase(t);const spin=j===0||j===8?t*3:t*28;
+  [0,1,2].map(i=>{const p=pos(i,t);return{i,p,d:view(p,sc,cy)[2]}}).sort((a,b)=>b.d-a.d).forEach(({i,p})=>{
+   const a=pos(i,Math.max(0,t-.06)),b=pos(i,Math.min(TOT,t+.06));const v=[(b[0]-a[0])/.12,(b[1]-a[1])/.12];const vm=Math.hypot(...v);
+   const tq=vm>1e-3?axAng([-v[1],v[0],0],Math.min(.32,vm*.12)):[1,0,0,0];
+   drawDrone(p,tq,.42,sc,cy,spin+i,0);
+   const lab=view([p[0],p[1],p[2]+.36],sc,cy);ctx.fillStyle='#14233a';ctx.beginPath();ctx.arc(lab[0],lab[1]-2,12,0,7);ctx.fill();
+   ctx.fillStyle='#fff';ctx.font='600 16px "Instrument Sans",system-ui,sans-serif';ctx.textAlign='center';ctx.fillText(String(i+1),lab[0],lab[1]+4)});
+  ctx.textAlign='start';ctx.lineCap='butt';
  }
- function read(){return[err().toFixed(1)+' %','Triangle',mode]}
- init();
- return{pitch:46*D2R,labels:['Spacing error','Formation','Mode'],note:'Simplified formation-keeping demo, not flight data.',btn:'Push a drone',
-  aria:'Three quadcopters flying a figure-eight path while holding an equilateral triangle formation; a pushed drone returns to its slot.',reset,settle,step,draw,read};
+ function read(){const z=pos(0,t)[2];return[Math.round(z/h*12)+' m',Math.round(covered(t)*100)+' %',phase(t)[0]===3||phase(t)[0]===5?'Hold':PH[phase(t)[0]][0]]}
+ return{reset,settle,step,draw,read};
 })();
 
 /* ---------------- Two canvases side by side ---------------- */

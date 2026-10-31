@@ -7,7 +7,7 @@
 <meta name="description" content="MSc student and lab instructor at North South University, and Junior Research Fellow at SPARRSO. CubeSat ADCS, satellite communications, swarm robotics and human-robot interaction.">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;600&family=Newsreader:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=3">
+<link rel="stylesheet" href="style.css?v=4">
 </head>
 <body>
 <div class="wrap">
@@ -31,6 +31,18 @@
    <div class="btns"><a class="btn primary" href="files/Md-Tasbeer-Ahmed-CV.pdf">Download CV (PDF)</a><a class="btn" href="#contact">Get in touch</a></div>
   </div>
  </div>
+</div>
+
+<section id="research"><div class="wrap">
+ <div class="rgrid">
+ <div>
+ <h2>Research focus</h2>
+ <p class="sub">My main work is satellite attitude control. I keep a second line in robots that work in groups and with people.</p>
+ <ul class="focus"><li>CubeSat ADCS</li><li>Satellite communications</li><li>Control systems</li><li>Swarm robotics</li><li>Human-robot interaction</li><li>Embedded systems</li></ul>
+ <div class="about" style="margin-top:32px">
+  <p style="margin:0">I finished my BSc in Electrical and Electronic Engineering at North South University in 2024 (CGPA 3.67, Magna Cum Laude) and started my MSc in September 2025. I am a Junior Research Fellow in the ADCS team at the Bangladesh Space Research and Remote Sensing Organization (SPARRSO). On NSU-AI-SAT I am a project lead of the ADCS team and a member of the communications team. My tools are MATLAB and Simulink for modelling, Kalman filters for sensor fusion, and CST Studio for antennas. I am working toward a PhD in swarm robotics and human-robot interaction.</p>
+ </div>
+ </div>
  <div class="sims">
  <figure class="sim">
   <figcaption>CubeSat: tumbling to detumbling</figcaption>
@@ -39,20 +51,12 @@
   <div class="row"><span>Simplified demo, not flight data.</span><button id="sat-re" type="button">Spin it again</button></div>
  </figure>
  <figure class="sim">
-  <figcaption>Three drones holding a triangle</figcaption>
-  <canvas id="sim-form" role="img" aria-label="Three quadcopters flying a figure-eight path while holding an equilateral triangle formation; a pushed drone returns to its slot."></canvas>
-  <div class="tele" aria-hidden="true"><div>Spacing error<b id="form-w">0.0 %</b></div><div>Formation<b id="form-e">Triangle</b></div><div>Mode<b id="form-m">Holding</b></div></div>
-  <div class="row"><span>Simplified demo, not flight data.</span><button id="form-re" type="button">Push a drone</button></div>
+  <figcaption>Multi-UAV Drone Project: triangle mission</figcaption>
+  <canvas id="sim-form" role="img" aria-label="Three quadcopters take off, fly to the corners of a triangle, then each flies one edge at the same time so they swap corners, repeating until each is back at its start, before returning and landing."></canvas>
+  <div class="tele" aria-hidden="true"><div>Altitude<b id="form-w">0 m</b></div><div>Triangle covered<b id="form-e">0 %</b></div><div>Phase<b id="form-m">On ground</b></div></div>
+  <div class="row"><span>Simplified replay of the mission pattern, not flight data.</span><button id="form-re" type="button">Restart</button></div>
  </figure>
  </div>
-</div>
-
-<section id="research"><div class="wrap">
- <h2>Research focus</h2>
- <p class="sub">My main work is satellite attitude control. I keep a second line in robots that work in groups and with people.</p>
- <ul class="focus"><li>CubeSat ADCS</li><li>Satellite communications</li><li>Control systems</li><li>Swarm robotics</li><li>Human-robot interaction</li><li>Embedded systems</li></ul>
- <div class="about" style="margin-top:36px">
-  <p style="margin:0;max-width:44em">I finished my BSc in Electrical and Electronic Engineering at North South University in 2024 (CGPA 3.67, Magna Cum Laude) and started my MSc in September 2025. I am a Junior Research Fellow in the ADCS team at the Bangladesh Space Research and Remote Sensing Organization (SPARRSO). On NSU-AI-SAT I am a project lead of the ADCS team and a member of the communications team. My tools are MATLAB and Simulink for modelling, Kalman filters for sensor fusion, and CST Studio for antennas. I am working toward a PhD in swarm robotics and human-robot interaction.</p>
  </div>
 </div></section>
 
@@ -108,6 +112,11 @@
    <a class="cert" href="files/certificates/IGCSE-Jun-2016-Physics.jpg" target="_blank" rel="noopener"><img src="img/certs/IGCSE-Jun-2016-Physics.jpg" alt="Pearson Edexcel International GCSE" loading="lazy"><span class="ct">Pearson Edexcel International GCSE</span><span class="cm">June 2016 · Physics</span></a>
    <a class="cert" href="files/certificates/IGCSE-Jun-2016-ICT-FPM.jpg" target="_blank" rel="noopener"><img src="img/certs/IGCSE-Jun-2016-ICT-FPM.jpg" alt="Pearson Edexcel International GCSE" loading="lazy"><span class="ct">Pearson Edexcel International GCSE</span><span class="cm">June 2016 · ICT, Further Pure Mathematics</span></a>
  </div>
+ <h3 class="certh">Co-Curricular Activities, Extra-Curricular Activities and Other Certificates</h3>
+ <div class="certs">
+   <a class="cert" href="files/certificates/Student-LED-Con-2023-Thesis-1st-Runner-Up.pdf" target="_blank" rel="noopener"><img src="img/certs/Student-LED-Con-2023-Thesis-1st-Runner-Up.jpg" alt="Certificate of Appreciation, 1st Runner-up, Undergraduate Thesis Paper Contest" loading="lazy"><span class="ct">1st Runner-up, Undergraduate Thesis Paper Contest</span><span class="cm">International Student-LED Conference 2023 · December 2023</span></a>
+   <a class="cert" href="files/certificates/Caretutors-Tutoring-Certificate-2024.pdf" target="_blank" rel="noopener"><img src="img/certs/Caretutors-Tutoring-Certificate-2024.jpg" alt="Caretutors Certificate of Tutoring" loading="lazy"><span class="ct">Certificate of Tutoring, Caretutors</span><span class="cm">November 2020 to June 2024 · English Medium · Rating 5.0</span></a>
+ </div>
 </div></section>
 
 <section id="education"><div class="wrap">
@@ -133,5 +142,5 @@
  <p style="margin:18px 0 0">© 2026 Md Tasbeer Ahmed</p>
 </div></footer>
 </div>
-<script src="sim.js?v=3"></script>
+<script src="sim.js?v=4"></script>
 </body></html>
